@@ -9,9 +9,7 @@
         </style>
     </head>
 <body>
-        <div>
-                <a href='/logout'>log out</a>
-        </div>
+      
         
         {% with messages = get_flashed_messages(with_categories=True) %}
             <ul>
@@ -20,11 +18,19 @@
             {% endfor %}
             </ul>
             {% endwith %} 
-<nav>
-    <a href="/newpost">new post</a>
-    <a href="/blog">all posts</a>
-</nav>
+            <nav>
+                <ul id="user-account">
+                    <li><a href="/login">login</a></li>
+                    <li><a href="/logout">logout</a></li>
+                    <li><a href="/signup">sign up</li>
+                </ul>
+                <ul>
+                    <li><a href="/">home</a></li>
+                    <li><a href="/blog">all posts</a></li>
+                    <li><a href="/newpost">new post</a></li>
+                </ul>
+               
+            </nav>
     {% block content %}
     {% endblock %}
 </body>
-</html>

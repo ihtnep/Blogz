@@ -18,21 +18,5 @@
         <div class="blogEntry">
         <input type="submit" value='Add Post'/>
         </div>
-    </form>
-
-
-{% if blogs == '' %}
-    <h3>No blog entries yet.</h3>
-    {% else %}
-    <ul>
-        {% for blog in blogs %}
-        <li><h3>Blog Title: {{blog.title}}</h3></li>
-        <li>Blog Entry:{{blog.body}}</li>
-        {% endfor %}
-    </ul>
- 
-{% endif %}
-   
-
-  
+    </form>  
 {% endblock %}

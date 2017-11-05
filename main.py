@@ -26,9 +26,9 @@ class Blog(db.Model):
     title = db.Column(db.String(120))
     body = db.Column(db.String(1000))
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    def __init__(self, title, body):
-        self.title = title
-        self.body = body
+    def __init__(self, name, owner):
+        self.name = name
+        self.owner = owner
 
 @app.before_request
 def require_login():
@@ -62,9 +62,9 @@ def sign_up():
         username_error = ""
         password_error = ""
         verify_error = ""
-        
+        existing_user= ""
 
-
+        existing_username_error = ""
 
         if username == "" or " " in username or len(username) < 3 or len(username) > 20: 
             username_error = "Invalid username"
@@ -77,17 +77,23 @@ def sign_up():
         
         if username_error == "" and verify_error == "" and password_error == "":
             existing_user = User.query.filter_by(username=username).first()
-        if not existing_user:
+        else:
+            return render_template("signup.html", username_error = username_error
+                                            , password_error = password_error    
+                                            , verify_error = verify_error,
+                                            existing_username_error = existing_username_error)
+        if existing_user is None:
             new_user = User(username, password)
             db.session.add(new_user)
             db.session.commit()
             session['username'] = username
-            return render_template ("index.html", username = username)
+            return redirect ("/newpost")
         else:
+            existing_username_error = "Username already exists"
             return render_template("signup.html", username_error = username_error
                                             , password_error = password_error    
                                             , verify_error = verify_error
-                                            , username = username)
+                                            , existing_username_error = existing_username_error)
                                 
 #@app.route('/newpost', methods=['GET', 'POST'])
 
@@ -122,9 +128,9 @@ def blog():
     #return render_template('blogentry.html',title="Build-A-Blog", 
         #Blogs=blogs)
     if request.args:
-        blog_id = request.args.get(id)
-        blog = Blog.query.get(blog_id)
-        
+        blog_id = request.args["id"]
+        blog = Blog.query.filter_by(id=blog_id).first()
+        print (blog)
         #return render_template('blogentry.html', blog=blog)
         return render_template('blogpost.html', blog=blog)
 
@@ -146,10 +152,14 @@ def new_post():
         title_error=""
         body_error=""
         if not title_error and not body_error:
-            new_blog = Blog(blog_title, blog_body)
+            user = User.query.filter_by(username=session['username']).first()
+            #new_blog = Blog(blog_title, blog_body)
+            new_blog = Blog("blog", user)
+            new_blog.title = blog_title
+            new_blog.body = blog_body
             db.session.add(new_blog)
             db.session.commit()
-            query_param_url = "/newpost?id=" + str(new_blog.id)
+            query_param_url = "/blog?id=" + str(new_blog.id)
             blog_id = request.args.get("id")
             #blog = Blog.query.get(blog_id)
             return redirect(query_param_url)
@@ -173,7 +183,7 @@ def singleuser():
         username = request.args.get("username")
         user = User.query.filter_by(username=username).first()
        # blogs = Blog.query.filter_by(owner=user.id).all()
-        return render_template('singleuser.html', blogs=user.blogs)
+        return render_template('singleuser.html', user=user)
     #completed_tasks = Task.query.filter_by(completed=True,owner=owner).all()
     return render_template('singleuser.html', title = "Blog List", id=id)
 if __name__ == '__main__':
