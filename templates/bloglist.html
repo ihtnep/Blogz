@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <h3>Build-a-blog</h3>
-    {% if blog|length == 0 %}
+    {% if blogs|length == 0 %}
     
     <p>No blog entries yet</p>
     {% else %}
@@ -9,8 +9,9 @@
         <div class="blogEntries">
 
             {% for blog in blogs %}
-            <h1>>{{blog.title}}</h1>
+            <h1>{{blog.title}}</h1>
             <p>{{blog.body}}</p>
+            <p>{{blog.owner.username}}</p>
             {% endfor %}
         </div>
     {% endif %}
